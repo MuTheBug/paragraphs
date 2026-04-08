@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JusticeCMS — Python Web Stack Course</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Landing-page-only extras */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--navy); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Nav ── */
+    .land-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: var(--header-h);
+      background: rgba(13,27,42,.9); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .land-nav .logo { font-size: 1.2rem; font-weight: 700; color: var(--gold); letter-spacing: .5px; }
+    .land-nav .logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; font-size: .9rem; color: var(--text-muted); }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--gold); color: var(--navy) !important;
+      padding: .4rem 1.1rem; border-radius: var(--radius);
+      font-weight: 700; font-size: .85rem !important;
+      transition: background var(--transition);
+    }
+    .nav-cta:hover { background: var(--gold-light) !important; }
+
+    /* ── Hero ── */
+    .land-hero {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 6rem 2rem 4rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(46,125,196,.12) 0%, transparent 70%);
+    }
+    .hero-inner { max-width: 860px; }
+    .land-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(201,162,39,.12); border: 1px solid rgba(201,162,39,.3);
+      color: var(--gold); font-size: .8rem; font-weight: 600; letter-spacing: 1px;
+      padding: .35rem 1rem; border-radius: 2rem; margin-bottom: 1.8rem; text-transform: uppercase;
+    }
+    .land-badge::before { content: '⚖️'; font-size: 1rem; }
+    .land-title {
+      font-size: clamp(2.4rem, 6vw, 4.2rem); font-weight: 800; line-height: 1.1;
+      color: var(--white); margin-bottom: 1.2rem;
+    }
+    .land-title .accent { color: var(--gold); }
+    .land-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--text-muted);
+      max-width: 620px; margin: 0 auto 2.5rem;
+    }
+    .land-cta {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: var(--gold); color: var(--navy);
+      padding: 1rem 2.4rem; border-radius: var(--radius);
+      font-weight: 800; font-size: 1.1rem;
+      transition: transform .15s, background .15s, box-shadow .15s;
+      box-shadow: 0 0 30px rgba(201,162,39,.25);
+    }
+    .land-cta:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 0 40px rgba(201,162,39,.4); }
+    .land-cta .arrow { font-size: 1.2rem; transition: transform .15s; }
+    .land-cta:hover .arrow { transform: translateX(4px); }
+    .hero-note { margin-top: 1.2rem; font-size: .82rem; color: var(--text-muted); }
+    .hero-note span { color: var(--green); }
+
+    /* ── Stats strip ── */
+    .land-stats {
+      display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+      padding: 1.5rem 2rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: var(--navy-mid);
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 1.8rem; font-weight: 800; color: var(--gold); }
+    .stat-lbl { font-size: .78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .8px; margin-top: .1rem; }
+
+    /* ── Stack pills ── */
+    .section { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+    .section-label { font-size: .75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); font-weight: 700; margin-bottom: .6rem; }
+    .section-title { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--white); margin-bottom: .8rem; }
+    .section-sub { color: var(--text-muted); max-width: 560px; }
+
+    .stack-pills { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+    .pill {
+      display: flex; align-items: center; gap: .7rem;
+      padding: .8rem 1.3rem; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--navy-mid);
+      font-size: .9rem; font-weight: 600; transition: border-color .2s, transform .15s;
+      cursor: default;
+    }
+    .pill:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .pill .pill-icon { font-size: 1.4rem; }
+    .pill .pill-name { color: var(--white); }
+    .pill .pill-desc { font-size: .75rem; color: var(--text-muted); font-weight: 400; display: block; margin-top: .1rem; }
+
+    /* ── What you'll build ── */
+    .build-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .build-card {
+      padding: 1.3rem; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--navy-mid);
+      transition: border-color .2s, transform .15s;
+    }
+    .build-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .build-card .bc-icon { font-size: 1.8rem; margin-bottom: .6rem; }
+    .build-card .bc-title { font-weight: 700; color: var(--white); font-size: .95rem; }
+    .build-card .bc-desc { font-size: .8rem; color: var(--text-muted); margin-top: .3rem; }
+
+    /* ── Module list ── */
+    .module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .mod-card {
+      display: flex; gap: 1rem; padding: 1.1rem 1.3rem;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--navy-mid); transition: border-color .2s, transform .15s;
+      cursor: pointer;
+    }
+    .mod-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+    .mod-num {
+      flex-shrink: 0; width: 2.4rem; height: 2.4rem;
+      border-radius: 50%; background: rgba(201,162,39,.12);
+      border: 1px solid rgba(201,162,39,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 800; color: var(--gold);
+    }
+    .mod-body { min-width: 0; }
+    .mod-title { font-weight: 700; color: var(--white); font-size: .9rem; }
+    .mod-desc { font-size: .78rem; color: var(--text-muted); margin-top: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mod-meta { display: flex; gap: .6rem; margin-top: .4rem; }
+    .mod-tag {
+      font-size: .68rem; padding: .1rem .5rem; border-radius: 2rem;
+      background: rgba(46,125,196,.15); color: var(--blue-light);
+    }
+
+    /* ── Learning path ── */
+    .path-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 0; }
+    .path-item {
+      display: flex; gap: 1.2rem; align-items: flex-start;
+      padding: 1.3rem 0; border-bottom: 1px solid var(--border);
+    }
+    .path-item:last-child { border-bottom: none; }
+    .path-num {
+      flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 50%;
+      background: var(--navy-light); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 800; color: var(--gold);
+    }
+    .path-body h3 { font-size: .95rem; font-weight: 700; color: var(--white); }
+    .path-body p { font-size: .82rem; color: var(--text-muted); margin-top: .2rem; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 2.5rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: .82rem;
+    }
+    footer strong { color: var(--gold); }
+
+    /* ── Progress bar hint ── */
+    .progress-hint {
+      display: none; text-align: center;
+      padding: .8rem; background: rgba(40,167,69,.12);
+      border: 1px solid rgba(40,167,69,.3); border-radius: var(--radius);
+      margin: 1.5rem auto 0; max-width: 420px; font-size: .85rem; color: var(--green);
+    }
+    .progress-hint.visible { display: block; }
+
+    @media (max-width: 600px) {
+      .land-stats { gap: 1.5rem; }
+      .module-grid { grid-template-columns: 1fr; }
+      .nav-links .hide-sm { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="land-nav">
+  <div class="logo">Justice<span>CMS</span></div>
+  <div class="nav-links">
+    <a href="#stack" class="hide-sm">Stack</a>
+    <a href="#modules" class="hide-sm">Modules</a>
+    <a href="course.html" class="nav-cta">Start Learning</a>
+  </div>
+</nav>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="land-hero">
+  <div class="hero-inner">
+    <div class="land-badge">Full-Stack Python Course</div>
+    <h1 class="land-title">
+      Build a Real<br><span class="accent">Court Management System</span><br>From Scratch
+    </h1>
+    <p class="land-subtitle">
+      Master FastAPI, PostgreSQL, Celery, Redis, Docker, and Nginx by building
+      a production-grade justice system — module by module, line by line.
+    </p>
+    <a href="course.html" class="land-cta">
+      Start Learning <span class="arrow">→</span>
+    </a>
+    <div class="progress-hint" id="progressHint">
+      ✓ Progress detected — <strong id="progressText"></strong>
+    </div>
+    <p class="hero-note"><span>✓ Free</span> &nbsp;·&nbsp; No sign-up &nbsp;·&nbsp; Runs in your browser &nbsp;·&nbsp; Progress saved locally</p>
+  </div>
+</section>
+
+<!-- ═══════════ STATS ═══════════ -->
+<div class="land-stats">
+  <div class="stat"><div class="stat-num">17</div><div class="stat-lbl">Modules</div></div>
+  <div class="stat"><div class="stat-num">80+</div><div class="stat-lbl">Lessons</div></div>
+  <div class="stat"><div class="stat-num">200+</div><div class="stat-lbl">Code Examples</div></div>
+  <div class="stat"><div class="stat-num">100+</div><div class="stat-lbl">Quiz Questions</div></div>
+  <div class="stat"><div class="stat-num">1</div><div class="stat-lbl">Real Project</div></div>
+</div>
+
+<!-- ═══════════ STACK ═══════════ -->
+<section class="section" id="stack">
+  <div class="section-label">Technologies</div>
+  <h2 class="section-title">Everything You'll Master</h2>
+  <p class="section-sub">A modern production stack used by real-world SaaS companies and government systems alike.</p>
+  <div class="stack-pills">
+    <div class="pill">
+      <span class="pill-icon">🐍</span>
+      <div>
+        <span class="pill-name">Python 3.12</span>
+        <span class="pill-desc">Language foundation & async programming</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">⚡</span>
+      <div>
+        <span class="pill-name">FastAPI</span>
+        <span class="pill-desc">High-performance REST API framework</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">🐘</span>
+      <div>
+        <span class="pill-name">PostgreSQL</span>
+        <span class="pill-desc">Relational database & advanced SQL</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">🔗</span>
+      <div>
+        <span class="pill-name">SQLAlchemy</span>
+        <span class="pill-desc">ORM, migrations, relationships</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">🌿</span>
+      <div>
+        <span class="pill-name">Celery + Redis</span>
+        <span class="pill-desc">Background tasks & message queuing</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">🌐</span>
+      <div>
+        <span class="pill-name">Vanilla JS</span>
+        <span class="pill-desc">Frontend without frameworks</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">🐳</span>
+      <div>
+        <span class="pill-name">Docker</span>
+        <span class="pill-desc">Containerisation & compose</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">🔒</span>
+      <div>
+        <span class="pill-name">Nginx + SSL</span>
+        <span class="pill-desc">Reverse proxy, HTTPS, rate limiting</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">🐧</span>
+      <div>
+        <span class="pill-name">Linux</span>
+        <span class="pill-desc">Server administration & shell scripting</span>
+      </div>
+    </div>
+    <div class="pill">
+      <span class="pill-icon">🔑</span>
+      <div>
+        <span class="pill-name">JWT + OAuth2</span>
+        <span class="pill-desc">Authentication & role-based access</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ WHAT YOU'LL BUILD ═══════════ -->
+<section class="section" style="padding-top:0" id="build">
+  <div class="section-label">The Project</div>
+  <h2 class="section-title">JusticeCMS — What You'll Build</h2>
+  <p class="section-sub">Every module adds a real, working piece to this production court management system.</p>
+  <div class="build-grid">
+    <div class="build-card"><div class="bc-icon">⚖️</div><div class="bc-title">Case Registry</div><div class="bc-desc">Filing, tracking, and searching court cases with full audit trails</div></div>
+    <div class="build-card"><div class="bc-icon">👥</div><div class="bc-title">Party Management</div><div class="bc-desc">Plaintiffs, defendants, attorneys, and witnesses with role assignments</div></div>
+    <div class="build-card"><div class="bc-icon">📅</div><div class="bc-title">Hearing Scheduler</div><div class="bc-desc">Calendar, courtroom assignment, conflict detection, and reminders</div></div>
+    <div class="build-card"><div class="bc-icon">📄</div><div class="bc-title">Document Vault</div><div class="bc-desc">Secure file uploads, PDF generation, e-signatures, and versioning</div></div>
+    <div class="build-card"><div class="bc-icon">🔐</div><div class="bc-title">Auth & RBAC</div><div class="bc-desc">JWT auth, role-based permissions for judges, clerks, and attorneys</div></div>
+    <div class="build-card"><div class="bc-icon">🔔</div><div class="bc-title">Notifications</div><div class="bc-desc">Email/SMS alerts via Celery background workers and Redis queues</div></div>
+    <div class="build-card"><div class="bc-icon">🧾</div><div class="bc-title">Fee & Finance</div><div class="bc-desc">Court fees, payment processing, and financial reporting</div></div>
+    <div class="build-card"><div class="bc-icon">📊</div><div class="bc-title">Analytics Dashboard</div><div class="bc-desc">Case load, resolution rates, and judge performance charts</div></div>
+    <div class="build-card"><div class="bc-icon">🌐</div><div class="bc-title">Public Portal</div><div class="bc-desc">Read-only case lookup for citizens with privacy redactions</div></div>
+    <div class="build-card"><div class="bc-icon">🚨</div><div class="bc-title">Warrants & Jury</div><div class="bc-desc">Arrest warrants, bench warrants, and jury pool management</div></div>
+    <div class="build-card"><div class="bc-icon">📦</div><div class="bc-title">Docker Deployment</div><div class="bc-desc">Full containerised stack with compose, secrets, and health checks</div></div>
+    <div class="build-card"><div class="bc-icon">📡</div><div class="bc-title">Monitoring & Backups</div><div class="bc-desc">Prometheus metrics, Grafana dashboards, and automated DB backups</div></div>
+  </div>
+</section>
+
+<!-- ═══════════ MODULES ═══════════ -->
+<section class="section" id="modules">
+  <div class="section-label">Curriculum</div>
+  <h2 class="section-title">17 Modules, Zero Gaps</h2>
+  <p class="section-sub">Each module builds on the last. Start from absolute zero and end with a deployable, production system.</p>
+  <div class="module-grid" id="moduleGrid"></div>
+</section>
+
+<!-- ═══════════ LEARNING PATH ═══════════ -->
+<section class="section" style="padding-top:0">
+  <div class="section-label">How It Works</div>
+  <h2 class="section-title">Your Learning Journey</h2>
+  <div class="path-list">
+    <div class="path-item">
+      <div class="path-num">1</div>
+      <div class="path-body">
+        <h3>Read the Lesson</h3>
+        <p>Every concept explained clearly — no assumed knowledge. Each lesson shows exactly why you're doing what you're doing.</p>
+      </div>
+    </div>
+    <div class="path-item">
+      <div class="path-num">2</div>
+      <div class="path-body">
+        <h3>Study the Code</h3>
+        <p>Real, copy-paste-ready code blocks with syntax highlighting. Every line is annotated when it matters.</p>
+      </div>
+    </div>
+    <div class="path-item">
+      <div class="path-num">3</div>
+      <div class="path-body">
+        <h3>Try the Terminal</h3>
+        <p>An interactive in-browser terminal lets you practice Linux and Python commands without leaving the course.</p>
+      </div>
+    </div>
+    <div class="path-item">
+      <div class="path-num">4</div>
+      <div class="path-body">
+        <h3>Take the Quiz</h3>
+        <p>Inline multiple-choice quizzes with instant feedback reinforce each concept before you move on.</p>
+      </div>
+    </div>
+    <div class="path-item">
+      <div class="path-num">5</div>
+      <div class="path-body">
+        <h3>Complete the Exercise</h3>
+        <p>Each lesson ends with a hands-on challenge that adds a real piece to JusticeCMS.</p>
+      </div>
+    </div>
+    <div class="path-item">
+      <div class="path-num">6</div>
+      <div class="path-body">
+        <h3>Track Your Progress</h3>
+        <p>Your completion state is saved automatically in your browser. Pick up exactly where you left off, any time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER CTA ═══════════ -->
+<section style="text-align:center; padding: 4rem 2rem; background: var(--navy-mid);">
+  <div class="land-badge" style="margin-bottom:1.4rem;">Ready?</div>
+  <h2 style="font-size: clamp(1.8rem,5vw,2.8rem); font-weight:800; color:var(--white); margin-bottom:.8rem;">Start Building Today</h2>
+  <p style="color:var(--text-muted); margin-bottom:2rem; max-width:480px; margin-left:auto; margin-right:auto;">
+    Module 00 takes you from a blank Linux server to a running Python environment — no prior backend experience needed.
+  </p>
+  <a href="course.html" class="land-cta">
+    Open the Course <span class="arrow">→</span>
+  </a>
+</section>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <p><strong>JusticeCMS</strong> — Interactive Python Web Stack Course &nbsp;·&nbsp; Built with pure HTML, CSS &amp; JS &nbsp;·&nbsp; No server required</p>
+</footer>
+
+<script>
+  // ── Module data for the grid ──
+  const MODULES = [
+    { num:'00', title:'Linux & Environment', desc:'Shell basics, SSH, users, permissions, Python install, virtualenv, pip', tags:['Linux','Python'] },
+    { num:'01', title:'Python for Web Dev', desc:'Async/await, type hints, Pydantic models, data structures, OOP refresher', tags:['Python'] },
+    { num:'02', title:'PostgreSQL & SQLAlchemy', desc:'Schema design, migrations with Alembic, relationships, queries', tags:['SQL','ORM'] },
+    { num:'03', title:'FastAPI Core', desc:'Routes, path/query params, request bodies, dependency injection, OpenAPI', tags:['FastAPI'] },
+    { num:'04', title:'JWT Auth & RBAC', desc:'Password hashing, tokens, OAuth2 flow, role-based access control', tags:['Security'] },
+    { num:'05', title:'Case Management API', desc:'Case model, CRUD endpoints, status machine, audit log', tags:['FastAPI','SQL'] },
+    { num:'06', title:'Party Registry', desc:'Plaintiffs, defendants, attorneys — many-to-many, search, merge', tags:['FastAPI','SQL'] },
+    { num:'07', title:'Documents & PDFs', desc:'File upload, S3-compatible storage, PDF generation with WeasyPrint', tags:['Files'] },
+    { num:'08', title:'Hearing Scheduler', desc:'Calendar API, conflict detection, courtroom assignment, iCal export', tags:['FastAPI'] },
+    { num:'09', title:'Celery & Redis', desc:'Task queues, scheduled jobs, email/SMS notifications, retries', tags:['Celery','Redis'] },
+    { num:'10', title:'Evidence & Chain of Custody', desc:'Evidence registry, digital signatures, tamper-proof audit chain', tags:['Security'] },
+    { num:'11', title:'Financials & Fees', desc:'Court fees, payment records, invoices, financial reports', tags:['FastAPI','SQL'] },
+    { num:'12', title:'Analytics Dashboard', desc:'Aggregation queries, Chart.js frontend, real-time stats endpoint', tags:['JS','SQL'] },
+    { num:'13', title:'Public Portal', desc:'Read-only citizen search, privacy redactions, rate limiting', tags:['FastAPI','JS'] },
+    { num:'14', title:'Warrants & Jury', desc:'Warrant workflow, jury pool management, summons generation', tags:['FastAPI'] },
+    { num:'15', title:'Docker & Nginx & SSL', desc:'Multi-container compose, Let\'s Encrypt, reverse proxy config', tags:['Docker','Nginx'] },
+    { num:'16', title:'Monitoring & Backups', desc:'Prometheus, Grafana, pg_dump automation, alerting rules', tags:['DevOps'] },
+  ];
+
+  const grid = document.getElementById('moduleGrid');
+  MODULES.forEach(m => {
+    const el = document.createElement('a');
+    el.href = `course.html#m${m.num}`;
+    el.className = 'mod-card';
+    el.innerHTML = `
+      <div class="mod-num">${m.num}</div>
+      <div class="mod-body">
+        <div class="mod-title">${m.title}</div>
+        <div class="mod-desc">${m.desc}</div>
+        <div class="mod-meta">${m.tags.map(t=>`<span class="mod-tag">${t}</span>`).join('')}</div>
+      </div>`;
+    grid.appendChild(el);
+  });
+
+  // ── Progress hint ──
+  try {
+    const prog = JSON.parse(localStorage.getItem('justicecms_progress') || '{}');
+    const done = Object.values(prog).filter(Boolean).length;
+    if (done > 0) {
+      document.getElementById('progressText').textContent = `${done} lesson${done>1?'s':''} completed`;
+      document.getElementById('progressHint').classList.add('visible');
+    }
+  } catch(e) {}
+</script>
+</body>
+</html>
