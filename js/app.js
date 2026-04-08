@@ -592,3 +592,35 @@ function escHtml(s) {
 
 // ─── Boot ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => app.init());
+
+// ─── Auto-init string-rendered terminals (from content.js) ─────
+document.addEventListener('DOMContentLoaded', () => {
+  // Re-run after lesson renders
+  const origRender = app.renderLesson.bind(app);
+  app.renderLesson = function(mod, les) {
+    origRender(mod, les);
+    document.querySelectorAll('.terminal[data-term-id]:not([data-inited])').forEach(termEl => {
+      termEl.dataset.inited = '1';
+      const out = termEl.querySelector('.terminal-output');
+      const inp = termEl.querySelector('.terminal-input');
+      if (!inp || !out) return;
+      const history = [];
+      let histIdx = -1;
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const cmd = inp.value.trim();
+          if (!cmd) return;
+          history.unshift(cmd); histIdx = -1;
+          inp.value = '';
+          app.runTerminalCmd(out, cmd, {});
+        }
+        if (e.key === 'ArrowUp')   { e.preventDefault(); histIdx = Math.min(histIdx+1, history.length-1); inp.value = history[histIdx]||''; }
+        if (e.key === 'ArrowDown') { e.preventDefault(); histIdx = Math.max(histIdx-1, -1); inp.value = history[histIdx]||''; }
+      });
+    });
+    // Also re-init quizzes for string-rendered content
+    app.initQuizzes();
+    app.initCopyButtons();
+  };
+});
